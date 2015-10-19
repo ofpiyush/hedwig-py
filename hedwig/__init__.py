@@ -1,5 +1,16 @@
-__author__ = 'piyush'
+"""
+ (@,@)
+                _          _
+  /\  /\___  __| |_      _(_) __ _
+ / /_/ / _ \/ _` \ \ /\ / / |/ _` |
+/ __  /  __/ (_| |\ V  V /| | (_| |
+\/ /_/ \___|\__,_| \_/\_/ |_|\__, |
+                             |___/
+"""
 
-"""
- (@,@) Hedwig.py
-"""
+__title__ = 'Hedwig Python'
+__version__ = '0.0.01'
+__author__ = 'Piyush'
+
+# Version synonym
+VERSION = __version__
