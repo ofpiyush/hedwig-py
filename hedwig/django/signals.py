@@ -47,5 +47,6 @@ def emit_hedwig_model_data(instance, action):
     hedwig_emitter.emit(routing_key, json.dumps(payload))
 
 
-post_save.connect(saved_hedwig_models, weak=False, dispatch_uid="saved_hedwig_models")
-post_delete.connect(deleted_hedwig_models, weak=False, dispatch_uid="deleted_hedwig_models")
+def register_hedwig_callbacks():
+    post_save.connect(saved_hedwig_models, weak=False, dispatch_uid="saved_hedwig_models")
+    post_delete.connect(deleted_hedwig_models, weak=False, dispatch_uid="deleted_hedwig_models")
