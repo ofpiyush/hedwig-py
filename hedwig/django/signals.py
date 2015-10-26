@@ -2,6 +2,7 @@ from django.db.models.signals import post_save, post_delete
 from django.db.models.fields.related import ManyToManyField
 import json
 from .settings import project_name
+from .emitter import hedwig_emitter
 
 
 def to_dict(instance):
@@ -43,8 +44,7 @@ def emit_hedwig_model_data(instance, action):
         payload = {}
     else:
         payload = to_dict(instance)
-
-    print routing_key, json.dumps(payload)
+    hedwig_emitter.emit(routing_key, json.dumps(payload))
 
 
 post_save.connect(saved_hedwig_models, weak=False, dispatch_uid="saved_hedwig_models")
