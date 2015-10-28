@@ -6,14 +6,19 @@ USER_SETTINGS = {
     'PASSWORD': 'hedwig_pass',
     'CONSUMER': {
         'QUEUES': {
+            'everything_printer': {
+                'BINDINGS': ['#'],
+                'CALLBACK': 'tests.callbacks.printer',
+                'DURABLE': False
+            },
             'accounts_catch_all': {
                 'BINDINGS': ['accounts.#'],
-                'CALLBACK': 'hedwig.tests.callbacks.accounts_printer',
+                'CALLBACK': 'tests.callbacks.accounts_printer',
                 'DURABLE': False
             },
             'message_create': {
                 'BINDINGS': ['message.serializer.create.*'],
-                'CALLBACK': 'hedwig.tests.callbacks.message_printer',
+                'CALLBACK': 'tests.callbacks.message_printer',
                 'DURABLE': False
             }
         }

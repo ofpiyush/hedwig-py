@@ -6,6 +6,7 @@ from hedwig.core.base import Base
 class Consumer(Base):
 
     def consume(self):
+        self.connect()
         channel = self.create_channel()
         self._bind_things(channel)
 
