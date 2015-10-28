@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, post_delete
 from django.db.models.fields.related import ManyToManyField
 import json
-from .settings import project_name
+from .settings import project_name, hedwig_settings
 from .emitter import hedwig_emitter
 
 
@@ -36,7 +36,7 @@ def emit_hedwig_model_data(instance, action):
     try:
         hide_fields = bool(instance.Hedwig.hide_fields)
     except AttributeError:
-        hide_fields = True
+        hide_fields = bool(hedwig_settings.DJANGO['HIDE_FIELDS'])
 
     routing_key = '.'.join([project_name, instance._meta.app_label, 'model', instance._meta.object_name, action,
                             str(instance.pk)])

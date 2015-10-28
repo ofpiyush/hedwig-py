@@ -11,6 +11,13 @@ DEFAULTS = {
 
     'CONSUMER': {
         'QUEUES': {}
+    },
+    'DJANGO': {
+        'MODEL_SIGNALS': False,
+        'HIDE_FIELDS': False
+    },
+    'REST_FRAMEWORK': {
+        'SERIALIZER_SIGNALS': True
     }
 }
 
