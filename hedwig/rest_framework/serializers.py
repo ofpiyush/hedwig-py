@@ -7,9 +7,9 @@ from hedwig.django.emitter import hedwig_emitter
 class HedwigModelSerializer(ModelSerializer):
 
     def save(self, **kwargs):
-        action = 'create'
+        action = 'created'
         if self.instance is not None:
-            action = 'update'
+            action = 'updated'
         super(HedwigModelSerializer, self).save(**kwargs)
         emit_hedwig_serializer_data(action, self.__module__.split('.')[0], self.__class__.__name__, self)
         return self.instance
