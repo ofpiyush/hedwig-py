@@ -9,7 +9,7 @@
 """
 
 __title__ = 'Hedwig Python'
-__version__ = '0.0.01'
+__version__ = '0.0.1'
 __author__ = 'Piyush'
 
 # Version synonym
