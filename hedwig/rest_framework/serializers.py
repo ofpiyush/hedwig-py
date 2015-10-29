@@ -5,7 +5,6 @@ from hedwig.django.emitter import hedwig_emitter
 
 
 class HedwigModelSerializer(ModelSerializer):
-
     def save(self, **kwargs):
         action = 'created'
         if self.instance is not None:

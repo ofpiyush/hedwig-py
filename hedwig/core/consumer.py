@@ -4,7 +4,6 @@ from hedwig.core.base import Base
 
 
 class Consumer(Base):
-
     def consume(self):
         self.connect()
         channel = self.create_channel()
@@ -25,7 +24,7 @@ class Consumer(Base):
 
     def _bind_things(self, channel):
         for q_name, q_settings in self.settings.CONSUMER['QUEUES'].iteritems():
-            channel.queue_declare(queue=q_name, durable=q_settings['DURABLE'],auto_delete=q_settings['AUTO_DELETE'])
+            channel.queue_declare(queue=q_name, durable=q_settings['DURABLE'], auto_delete=q_settings['AUTO_DELETE'])
             for binding in q_settings['BINDINGS']:
                 channel.queue_bind(exchange=self.settings.EXCHANGE, queue=q_name,
                                    routing_key=binding)

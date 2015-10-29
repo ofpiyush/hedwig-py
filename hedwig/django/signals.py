@@ -1,6 +1,7 @@
+import json
+
 from django.db.models.signals import post_save, post_delete
 from django.db.models.fields.related import ManyToManyField
-import json
 from .settings import project_name, hedwig_settings
 from .emitter import hedwig_emitter
 

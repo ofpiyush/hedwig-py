@@ -53,4 +53,3 @@ class ServiceManager(object):
 
     def is_running(self):
         return self.running
-
