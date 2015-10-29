@@ -25,11 +25,11 @@ class Consumer(Base):
 
     def _bind_things(self, channel):
         for q_name, q_settings in self.settings.CONSUMER['QUEUES'].iteritems():
-            channel.queue_declare(queue=q_name, durable=q_settings['DURABLE'])
+            channel.queue_declare(queue=q_name, durable=q_settings['DURABLE'],auto_delete=q_settings['AUTO_DELETE'])
             for binding in q_settings['BINDINGS']:
                 channel.queue_bind(exchange=self.settings.EXCHANGE, queue=q_name,
                                    routing_key=binding)
-            channel.basic_consume(self._import(q_settings['CALLBACK']), queue=q_name)
+            channel.basic_consume(self._import(q_settings['CALLBACK']), queue=q_name, no_ack=q_settings['NO_ACK'])
 
     def _import(self, cb):
         try:
