@@ -10,8 +10,8 @@ from .settings import hedwig_settings
 
 
 def main(argv):
-    msg_service = ServiceManager(HedwigWorker(settings=hedwig_settings), num_workers=2)
-    msg_service.start()
+    msg_service = ServiceManager(HedwigWorker, num_workers=2)
+    msg_service.start(settings=hedwig_settings)
 
 
 if __name__ == "__main__":
