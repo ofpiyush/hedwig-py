@@ -30,5 +30,5 @@ class Base(object):
     """
 
     def shutdown(self):
-        self.connection.close()
-        self.connection = None
+        if self.connection and self.connection.is_open:
+            self.connection.close()
