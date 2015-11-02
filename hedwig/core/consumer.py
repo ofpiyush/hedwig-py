@@ -19,8 +19,13 @@ class Consumer(Base):
             self.close_channel(channel)
             self.shutdown()
 
-    def callback(self, ch, method, properties, body):
-        pass
+    def callback(self, func):
+        def callback_wrapper(ch, method, properties, body):
+            try:
+                func(ch, method, properties, body)
+            except Exception as e:
+                print e.message
+        return callback_wrapper
 
     def _bind_things(self, channel):
         for q_name, q_settings in self.settings.CONSUMER['QUEUES'].iteritems():
@@ -28,7 +33,7 @@ class Consumer(Base):
             for binding in q_settings['BINDINGS']:
                 channel.queue_bind(exchange=self.settings.EXCHANGE, queue=q_name,
                                    routing_key=binding)
-            channel.basic_consume(self._import(q_settings['CALLBACK']), queue=q_name, no_ack=q_settings['NO_ACK'])
+            channel.basic_consume(self.callback(self._import(q_settings['CALLBACK'])), queue=q_name, no_ack=q_settings['NO_ACK'])
 
     def _import(self, cb):
         try:
