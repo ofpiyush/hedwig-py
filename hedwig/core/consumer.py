@@ -11,6 +11,7 @@ class Consumer(Base):
         self._bind_things(channel)
 
         try:
+            logging.info('Hedwig: Start consuming')
             channel.start_consuming()
         except KeyboardInterrupt:
             self.close_channel(channel)
@@ -35,7 +36,7 @@ class Consumer(Base):
             logging.debug('Hedwig: Declaring queue - {0}'.format(q_name))
             channel.queue_declare(queue=q_name, durable=q_settings['DURABLE'], auto_delete=q_settings['AUTO_DELETE'])
             for binding in q_settings['BINDINGS']:
-                logging.debug("Hedwig: Binding the queue - {0} with key {1}".format(q_name, binding))
+                logging.info("Hedwig: Binding the queue - {0} with key {1}".format(q_name, binding))
                 channel.queue_bind(exchange=self.settings.EXCHANGE, queue=q_name,
                                    routing_key=binding)
             logging.debug("Hedwig: Setting Basic consume for callback - {0}".format(q_settings['CALLBACK']))

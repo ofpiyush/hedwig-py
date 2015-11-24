@@ -4,7 +4,7 @@ import logging
 
 class Base(object):
     def __init__(self, settings):
-        logging.debug("Hedwig: Base init for class - {0}".format(self.__class__.__name__))
+        logging.info("Hedwig: Base init for class - {0}".format(self.__class__.__name__))
         self.settings = settings
         logging.debug("Hedwig: Setting credentials")
         credentials = pika.PlainCredentials(username=self.settings.USERNAME,
