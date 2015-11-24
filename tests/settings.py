@@ -1,4 +1,7 @@
 from hedwig.core.settings import Settings, DEFAULTS
+import logging, sys
+
+logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 USER_SETTINGS = {
     'VHOST': 'hedwig_server',
