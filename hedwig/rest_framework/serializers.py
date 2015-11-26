@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework.renderers import JSONRenderer
-from hedwig.django.settings import project_name, hedwig_settings
+from hedwig.django.settings import project_name
+from .settings import hedwig_rest_framework_settings
 from hedwig.django.emitter import hedwig_emitter
 
 
@@ -15,7 +16,7 @@ class HedwigModelSerializer(ModelSerializer):
 
 
 def emit_hedwig_serializer_data(action, module_name, serializer_name, serializer):
-    if not bool(hedwig_settings.REST_FRAMEWORK['SERIALIZER_SIGNALS']):
+    if not bool(hedwig_rest_framework_settings.SERIALIZER_SIGNALS):
         return
 
     routing_key = '.'.join([project_name, module_name, 'serializer', serializer_name, action,

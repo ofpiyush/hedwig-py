@@ -1,7 +1,7 @@
 from hedwig.core.settings import Settings, DEFAULTS
 import logging, sys
 
-logging.basicConfig(stream=sys.stderr, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 USER_SETTINGS = {
     'VHOST': 'hedwig_server',
@@ -16,20 +16,20 @@ USER_SETTINGS = {
                 'AUTO_DELETE': True,
                 'NO_ACK': True
             },
-            'accounts_catch_all': {
-                'BINDINGS': ['accounts.#'],
-                'CALLBACK': 'tests.callbacks.accounts_printer',
-                'DURABLE': False,
-                'AUTO_DELETE': True,
-                'NO_ACK': True
-            },
-            'message_create': {
-                'BINDINGS': ['message.serializer.create.*'],
-                'CALLBACK': 'tests.callbacks.message_printer',
-                'DURABLE': False,
-                'AUTO_DELETE': True,
-                'NO_ACK': True
-            }
+            # 'accounts_catch_all': {
+            #     'BINDINGS': ['accounts.#'],
+            #     'CALLBACK': 'tests.callbacks.accounts_printer',
+            #     'DURABLE': False,
+            #     'AUTO_DELETE': True,
+            #     'NO_ACK': True
+            # },
+            # 'message_create': {
+            #     'BINDINGS': ['message.serializer.create.*'],
+            #     'CALLBACK': 'tests.callbacks.message_printer',
+            #     'DURABLE': False,
+            #     'AUTO_DELETE': True,
+            #     'NO_ACK': True
+            # }
         }
     }
 }

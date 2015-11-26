@@ -6,6 +6,10 @@ import sys
 import multiprocessing
 import inspect
 import traceback
+import logging
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ServiceManager(object):
@@ -21,7 +25,7 @@ class ServiceManager(object):
 
     def start(self, *args, **kwargs):
         self.running = True
-        print "Starting: Hedwig Worker Service..."
+        LOGGER.info("Starting: Hedwig Worker Service...")
         try:
             while self.running:
                 if len(self.workers) < self.num_workers:
@@ -38,15 +42,16 @@ class ServiceManager(object):
 
         except KeyboardInterrupt:
             self.stop()
-        except Exception:
+        except Exception as e:
+            LOGGER.exception(str(e))
             traceback.print_exc(file=sys.stdout)
             self.stop()
 
     def stop(self, signum=None, frame=None):
         self.running = False
-        print "Stopping: Hedwig Worker Service..."
+        LOGGER.info("Stopping: Hedwig Worker Service...")
         for worker in self.workers:
-            print "Stopping Worker: " + worker.name
+            LOGGER.info("Stopping Worker: " + worker.name)
             worker.shutdown()
             worker.terminate()
         sys.exit(0)

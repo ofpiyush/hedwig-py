@@ -1,5 +1,14 @@
 from setuptools import setup
 import os
+import re
+
+
+def get_version(package):
+    """
+    Return package version as listed in `__version__` in `init.py`.
+    """
+    init_py = open(os.path.join(package, '__init__.py')).read()
+    return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
 def get_packages(package):
@@ -12,17 +21,22 @@ def get_packages(package):
             if os.path.exists(os.path.join(dirpath, '__init__.py'))]
 
 setup(name="hedwig-py",
-      version="0.0.1",
+      version=get_version('hedwig'),
       description="Python emitter and consumer for Hedwig",
+      url="https://github.com/ofpiyush/hedwig-py/",
       author="Piyush",
-      author_email="piyush@magictiger.com",
+      author_email="mail@ofpiyush.in",
       licesnse='MIT',
       packages=get_packages('hedwig'),
       install_requires=[
           'pika'
       ],
-      test_requires=[
-          'unittest',
-          'requests'
-      ],
-      zip_safe=False)
+      zip_safe=False,
+      classifiers=[
+          'Development Status :: 3 - Alpha',
+          'Intended Audience :: Developers',
+          'License :: OSI Approved :: MIT License',
+          'Operating System :: OS Independent',
+          'Topic :: System :: Distributed Computing',
+      ]
+      )

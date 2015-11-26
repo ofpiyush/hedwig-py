@@ -1,16 +1,19 @@
 from .base import Base
 import logging
+LOGGER = logging.getLogger(__name__)
 
 
 class Emitter(Base):
     def emit(self, key, message):
         try:
-            logging.debug("Hedwig: trying to emit - {0}".format(message))
+            LOGGER.debug("Trying to emit - %s" % message)
             self.connect()
             pub_channel = self.create_channel()
             pub_channel.basic_publish(exchange=self.settings.EXCHANGE, routing_key=key, body=message)
-            logging.info("Hedwig: Emitted - {0}".format(message))
+            logging.info("Emitted - %s" % message)
             self.close_channel(pub_channel)
             self.shutdown()
         except Exception as e:
-            logging.warning("Hedwig: Error - {0}".format(str(e)))
+            LOGGER.exception("Emitter exception %s" % str(e))
+            if self.settings.EMITTER['RAISE_EXCEPTION']:
+                raise e

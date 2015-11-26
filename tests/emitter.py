@@ -16,9 +16,9 @@ hedwig_emitter.emit('message.serializer.create.asdf123', json.dumps({
     'message': 'ye lo babua chal pada'
 }))
 
-hedwig_emitter.emit('message.serializer.update.asdf123', json.dumps({
-    'mid': "asdf123",
-    'from': 'piyush',
-    'to': 'sandeep',
-    'message': 'ye update nahi milna chahiye'
-}))
+# for x in range(1, 10000):
+#     hedwig_emitter.emit('accounts.model.create.{0}'.format(x), json.dumps({
+#
+#         'id': x,
+#         'username': 'piyush'
+#     }))
