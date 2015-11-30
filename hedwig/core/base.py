@@ -1,5 +1,6 @@
 import pika
 import logging
+from pika.exceptions import ConnectionClosed
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,6 +19,7 @@ class Base(object):
                                                      socket_timeout=self.settings.SOCKET_TIMEOUT)
 
         self.connection = None
+        self.channel = None
 
     def create_channel(self):
         LOGGER.debug("Creating a channel")
@@ -28,19 +30,36 @@ class Base(object):
         channel.exchange_declare(exchange=self.settings.EXCHANGE, type=self.settings.EXCHANGE_TYPE, durable=True)
         return channel
 
+    def get_channel(self):
+
+        self.connect()
+        if self.channel is None or not self.channel.is_open:
+            LOGGER.info("No active channel found, creating a channel")
+            self.channel = self.create_channel()
+        return self.channel
+
     def connect(self):
         LOGGER.debug("Making a blocking connection")
         if self.connection is None or not self.connection.is_open:
+            LOGGER.info("No active connection found, creating a connection")
             self.connection = pika.BlockingConnection(self.conn_params)
 
-    def close_channel(self, channel):
+    def close_channel(self):
         LOGGER.debug("Trying to close channel if open")
-        if channel.is_open:
+        if self.channel and self.channel.is_open:
             LOGGER.debug("Closing channel")
-            channel.cancel()
-            channel.close()
+            try:
+                self.channel.cancel()
+                self.channel.close()
+            except ConnectionClosed:
+                self.channel = None
 
     def shutdown(self):
+        LOGGER.debug("Shutdown called")
+        self.close_channel()
         if self.connection and self.connection.is_open:
-            LOGGER.debug("Shutdown called")
-            self.connection.close()
+            LOGGER.debug("Closing connection")
+            try:
+                self.connection.close()
+            except ConnectionClosed:
+                self.connection = None

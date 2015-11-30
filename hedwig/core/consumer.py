@@ -8,22 +8,22 @@ LOGGER = logging.getLogger(__name__)
 class Consumer(Base):
     def consume(self):
         LOGGER.debug('Consumer Initialized')
-        self.connect()
-        channel = self.create_channel()
+        # self.connect()
+        channel = self.get_channel()
         self._bind_things(channel)
 
         try:
             LOGGER.info('Start consuming')
             channel.start_consuming()
-        except KeyboardInterrupt:
+        except KeyboardInterrupt as e:
             LOGGER.info('Keyboard interrupt, stop consuming')
-            self.close_channel(channel)
             self.shutdown()
-
+            raise e
         except Exception as e:
             LOGGER.exception("'%s" % str(e))
-            self.close_channel(channel)
             self.shutdown()
+            if self.settings.CONSUMER['RAISE_EXCEPTION']:
+                raise e
 
     def callback(self, func):
         def callback_wrapper(ch, method, properties, body):
