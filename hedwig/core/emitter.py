@@ -6,6 +6,14 @@ LOGGER = logging.getLogger(__name__)
 
 class Emitter(Base):
     def emit(self, key, message):
+        """
+         Emits a message to RabbitMQ
+
+        :param key: Routing key to emit on
+        :param message: json serialized msg body
+        :return:
+        :raises Exception: If RAISE_EXCEPTION is true in emitter settings
+        """
         try:
             self._emit(key, message)
         except ConnectionClosed:

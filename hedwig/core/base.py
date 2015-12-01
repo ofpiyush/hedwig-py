@@ -55,10 +55,10 @@ class Base(object):
                 self.channel = None
 
     def shutdown(self):
-        LOGGER.debug("Shutdown called")
+        LOGGER.info("Shutdown called")
         self.close_channel()
         if self.connection and self.connection.is_open:
-            LOGGER.debug("Closing connection")
+            LOGGER.info("Closing connection")
             try:
                 self.connection.close()
             except ConnectionClosed:

@@ -7,6 +7,12 @@ LOGGER = logging.getLogger(__name__)
 
 class Consumer(Base):
     def consume(self):
+        """
+        Consumes messages from RabbitMQ
+        :return:
+        :raises KeyboardInterrupt: if one was sent to it
+        :raises Exception: if RAISE_EXCEPTION on CONSUMER is true
+        """
         LOGGER.debug('Consumer Initialized')
         # self.connect()
         channel = self.get_channel()
@@ -22,10 +28,19 @@ class Consumer(Base):
         except Exception as e:
             LOGGER.exception("'%s" % str(e))
             self.shutdown()
+            print self.settings.CONSUMER
             if self.settings.CONSUMER['RAISE_EXCEPTION']:
+                LOGGER.info("CONSUMER RAISED EXCEPTION")
                 raise e
 
     def callback(self, func):
+        """
+        Wraps callback from settings
+
+        :param func: actual callback to be called
+        :return callback_wrapper: Callback wrapper
+        :raises Exception: if consumer RAISE_EXCEPTION is true
+        """
         def callback_wrapper(ch, method, properties, body):
             LOGGER.info("Got message - %s with body %s" % (method.routing_key, body))
             try:
@@ -33,6 +48,7 @@ class Consumer(Base):
             except Exception as e:
                 LOGGER.exception("Callback exception '%s'" % str(e))
                 if self.settings.CONSUMER['RAISE_EXCEPTION']:
+                    LOGGER.info("CALLBACK RAISED EXCEPTION")
                     raise e
 
         return callback_wrapper

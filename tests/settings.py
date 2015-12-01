@@ -8,6 +8,7 @@ USER_SETTINGS = {
     'USERNAME': 'hedwig_test',
     'PASSWORD': 'hedwig_pass',
     'CONSUMER': {
+        'RAISE_EXCEPTION': True,
         'QUEUES': {
             'everything_printer': {
                 'BINDINGS': ['#'],
