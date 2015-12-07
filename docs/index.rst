@@ -1,10 +1,27 @@
-Welcome to Hedwig Python's documentation!
-=========================================
+======
+Hedwig
+======
+
+Hedwig is a flexible, configurable, cross-language set of libraries to support reliable communication between micro-services.
+
+Hedwig relies on RabbitMQ as the broker and simplifies managing workers with it's service manager.
+
+Hedwig Python
+=============
+
+``hedwig-py`` is the python implementation of Hedwig.
+
+If you use ``hedwig-py`` with django, it can attach itself with models and start emitting events on their create, update and deletes.
+
+For more details on how to use this, check Getting Started with Django Section. (TBA)
+
+
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
+
 
 
 

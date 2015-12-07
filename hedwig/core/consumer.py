@@ -6,6 +6,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Consumer(Base):
+    def __init__(self, settings):
+        self._callbacks = {}
+        super(Consumer, self).__init__(settings)
+
     def consume(self):
         """
         Consumes messages from RabbitMQ
@@ -28,23 +32,24 @@ class Consumer(Base):
         except Exception as e:
             LOGGER.exception("'%s" % str(e))
             self.shutdown()
-            print self.settings.CONSUMER
             if self.settings.CONSUMER['RAISE_EXCEPTION']:
                 LOGGER.info("CONSUMER RAISED EXCEPTION")
                 raise e
 
-    def callback(self, func):
+    def callback(self, func_string):
         """
         Wraps callback from settings
 
-        :param func: actual callback to be called
+        :param func_string: string notation of actual callback to be called
         :return callback_wrapper: Callback wrapper
         :raises Exception: if consumer RAISE_EXCEPTION is true
         """
         def callback_wrapper(ch, method, properties, body):
             LOGGER.info("Got message - %s with body %s" % (method.routing_key, body))
+            if func_string not in self._callbacks:
+                self._callbacks[func_string] = self._import(func_string)
             try:
-                func(ch, method, properties, body)
+                self._callbacks[func_string](ch, method, properties, body)
             except Exception as e:
                 LOGGER.exception("Callback exception '%s'" % str(e))
                 if self.settings.CONSUMER['RAISE_EXCEPTION']:
@@ -63,7 +68,7 @@ class Consumer(Base):
                 channel.queue_bind(exchange=self.settings.EXCHANGE, queue=q_name,
                                    routing_key=binding)
             LOGGER.debug("Setting Basic consume for callback - %s " % q_settings['CALLBACK'])
-            channel.basic_consume(self.callback(self._import(q_settings['CALLBACK'])), queue=q_name,
+            channel.basic_consume(self.callback(q_settings['CALLBACK']), queue=q_name,
                                   no_ack=q_settings['NO_ACK'])
 
     def _import(self, cb):

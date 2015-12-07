@@ -80,6 +80,13 @@ HEDWIG = {
     'PASSWORD': 'hedwig_pass',
     'CONSUMER': {
         'QUEUES': {
+            'djangotest_consumer': {
+                'BINDINGS': ['#'],
+                'CALLBACK': 'chidiya.callbacks.printer',
+                'DURABLE': False,
+                'AUTO_DELETE': True,
+                'NO_ACK': True
+            }
         }
     }
 }
