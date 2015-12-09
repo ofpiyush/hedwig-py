@@ -1,6 +1,7 @@
 from importlib import import_module
 import logging
 from hedwig.core.base import Base
+from pika.exceptions import ConnectionClosed
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,6 +26,9 @@ class Consumer(Base):
         try:
             LOGGER.info('Start consuming')
             channel.start_consuming()
+        except ConnectionClosed:
+            LOGGER.exception('Pika connection closed detected. Will attempt to start consuming again')
+            self.consume()
         except KeyboardInterrupt as e:
             LOGGER.info('Keyboard interrupt, stop consuming')
             self.shutdown()
