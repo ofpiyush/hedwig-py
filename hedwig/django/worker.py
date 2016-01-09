@@ -8,10 +8,11 @@ LOGGER = logging.getLogger(__name__)
 
 class DjangoHedwigWorker(multiprocessing.Process):
     def __init__(self, *args, **kwargs):
+        self.hedwig_consumer = None
         super(DjangoHedwigWorker, self).__init__(*args, **kwargs)
 
     def run(self):
-        from consumer import Consumer
+        from hedwig.core.consumer import Consumer
         import django
         django.setup()
         from .settings import hedwig_settings
@@ -22,5 +23,6 @@ class DjangoHedwigWorker(multiprocessing.Process):
 
     def shutdown(self):
         LOGGER.info("Django Hedwig consumer: shutting down")
-        self.hedwig_consumer.shutdown()
+        if self.hedwig_consumer is not None:
+            self.hedwig_consumer.shutdown()
         LOGGER.info("Django Hedwig consumer: shutdown complete")
