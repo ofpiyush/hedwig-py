@@ -58,7 +58,7 @@ class Consumer(Base):
                 LOGGER.exception("Callback exception '%s'" % str(e))
                 if self.settings.CONSUMER['RAISE_EXCEPTION']:
                     LOGGER.info("CALLBACK RAISED EXCEPTION")
-                    raise e
+                    raise
 
         return callback_wrapper
 

@@ -26,7 +26,7 @@ setup(name="hedwig-py",
       url="https://github.com/ofpiyush/hedwig-py/",
       author="Piyush",
       author_email="mail@ofpiyush.in",
-      licesnse='MIT',
+      license='MIT',
       packages=get_packages('hedwig'),
       install_requires=[
           'pika'
