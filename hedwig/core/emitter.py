@@ -30,4 +30,4 @@ class Emitter(Base):
         if pub_channel.basic_publish(exchange=self.settings.EXCHANGE, routing_key=key, body=message):
             LOGGER.info("Emitted - %s" % message)
         else:
-            LOGGER.ERROR("Failed to emit - %s" % message)
+            LOGGER.error("Failed to emit - %s" % message)

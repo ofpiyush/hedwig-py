@@ -1,7 +1,9 @@
-from importlib import import_module
 import logging
-from hedwig.core.base import Base
+
 from pika.exceptions import ConnectionClosed
+
+from hedwig import utils
+from hedwig.core.base import Base
 
 LOGGER = logging.getLogger(__name__)
 
@@ -51,7 +53,7 @@ class Consumer(Base):
         def callback_wrapper(ch, method, properties, body):
             LOGGER.info("Got message - %s with body %s" % (method.routing_key, body))
             if func_string not in self._callbacks:
-                self._callbacks[func_string] = self._import(func_string)
+                self._callbacks[func_string] = utils.import_obj(func_string)
             try:
                 self._callbacks[func_string](ch, method, properties, body)
             except Exception as e:
@@ -75,15 +77,3 @@ class Consumer(Base):
             channel.basic_consume(self.callback(q_settings['CALLBACK']), queue=q_name,
                                   no_ack=q_settings['NO_ACK'])
 
-    def _import(self, cb):
-        LOGGER.debug("Attempting to import - %s" % cb)
-        try:
-            # Nod to DRF for nod to tastypie's use of importlib.
-            parts = cb.split('.')
-            module_path, callback_name = '.'.join(parts[:-1]), parts[-1]
-            LOGGER.debug("Importing %s from %s" % (callback_name, module_path))
-            module = import_module(module_path)
-            return getattr(module, callback_name)
-        except (ImportError, AttributeError) as e:
-            msg = "Could not import '%s' %s: %s." % (cb, e.__class__.__name__, e)
-            raise ImportError(msg)
