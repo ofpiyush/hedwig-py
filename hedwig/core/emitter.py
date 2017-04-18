@@ -22,11 +22,12 @@ class Emitter(Base):
         except Exception as e:
             LOGGER.exception("Emitter exception %s" % str(e))
             if self.settings.EMITTER['RAISE_EXCEPTION']:
-                raise e
+                raise
 
     def _emit(self, key, message):
         pub_channel = self.get_channel()
         LOGGER.debug("Trying to emit - %s" % message)
-        pub_channel.basic_publish(exchange=self.settings.EXCHANGE, routing_key=key, body=message)
-        logging.info("Emitted - %s" % message)
-
+        if pub_channel.basic_publish(exchange=self.settings.EXCHANGE, routing_key=key, body=message):
+            LOGGER.info("Emitted - %s" % message)
+        else:
+            LOGGER.ERROR("Failed to emit - %s" % message)

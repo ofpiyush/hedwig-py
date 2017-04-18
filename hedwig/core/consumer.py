@@ -32,13 +32,13 @@ class Consumer(Base):
         except KeyboardInterrupt as e:
             LOGGER.info('Keyboard interrupt, stop consuming')
             self.shutdown()
-            raise e
+            raise
         except Exception as e:
             LOGGER.exception("'%s" % str(e))
             self.shutdown()
             if self.settings.CONSUMER['RAISE_EXCEPTION']:
                 LOGGER.info("CONSUMER RAISED EXCEPTION")
-                raise e
+                raise
 
     def callback(self, func_string):
         """
