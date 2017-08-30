@@ -27,7 +27,7 @@ class Base(object):
         LOGGER.debug(
             "Declaring {0} exchange - {1}".format(self.settings.EXCHANGE_TYPE, self.settings.EXCHANGE)
         )
-        channel.exchange_declare(exchange=self.settings.EXCHANGE, type=self.settings.EXCHANGE_TYPE, durable=True)
+        channel.exchange_declare(exchange=self.settings.EXCHANGE, exchange_type=self.settings.EXCHANGE_TYPE, durable=True)
         return channel
 
     def get_channel(self):
