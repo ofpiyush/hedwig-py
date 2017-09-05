@@ -1,4 +1,5 @@
 import logging
+from future.utils import iteritems
 
 from pika.exceptions import ConnectionClosed
 
@@ -66,7 +67,7 @@ class Consumer(Base):
 
     def _bind_things(self, channel):
         LOGGER.debug('Attempting to bind queues')
-        for q_name, q_settings in self.settings.CONSUMER['QUEUES'].iteritems():
+        for q_name, q_settings in iteritems(self.settings.CONSUMER['QUEUES']):
             LOGGER.debug('Declaring queue - %s' % q_name)
             channel.queue_declare(queue=q_name, durable=q_settings['DURABLE'], auto_delete=q_settings['AUTO_DELETE'])
             for binding in q_settings['BINDINGS']:
