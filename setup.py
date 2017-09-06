@@ -2,6 +2,9 @@ from setuptools import setup
 import os
 import re
 
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
 
 def get_version(package):
     """
@@ -20,6 +23,7 @@ def get_packages(package):
             for dirpath, dirnames, filenames in os.walk(package)
             if os.path.exists(os.path.join(dirpath, '__init__.py'))]
 
+
 setup(name="hedwig-py",
       version=get_version('hedwig'),
       description="Python emitter and consumer for Hedwig",
@@ -28,9 +32,7 @@ setup(name="hedwig-py",
       author_email="mail@ofpiyush.in",
       license='MIT',
       packages=get_packages('hedwig'),
-      install_requires=[
-          'pika'
-      ],
+      install_requires=requirements,
       zip_safe=False,
       classifiers=[
           'Development Status :: 3 - Alpha',
