@@ -20,6 +20,12 @@ DEFAULTS = {
     }
 }
 
+DEFAULT_QUEUE_SETTINGS = {
+    "DURABLE": True,
+    "AUTO_DELETE": False,
+    "EXCLUSIVE": False,
+    "NO_ACK": False,
+}
 # Nod to https://www.xormedia.com/recursively-merge-dictionaries-in-python/
 
 

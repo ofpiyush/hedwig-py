@@ -1,10 +1,12 @@
 import logging
+import inspect
 from future.utils import iteritems
 
 from pika.exceptions import ConnectionClosed
 
 from hedwig import utils
 from hedwig.core.base import Base
+from hedwig.core.settings import DEFAULT_QUEUE_SETTINGS
 
 LOGGER = logging.getLogger(__name__)
 
@@ -43,16 +45,30 @@ class Consumer(Base):
                 LOGGER.info("CONSUMER RAISED EXCEPTION")
                 raise
 
-    def callback(self, func_string):
+    def callback(self, func):
         """
         Wraps callback from settings
 
-        :param func_string: string notation of actual callback to be called
+        :param func: function or string notation of actual callback to be called
         :return callback_wrapper: Callback wrapper
         :raises Exception: if consumer RAISE_EXCEPTION is true
         """
+        if callable(func):
+            mod = inspect.getmodule(func)
+            if mod is None:
+                raise Exception("Can't determine module for - %s" % (func.__name__))
+            func_string = "{}.{}.{}.{}".format(
+                "__hedwig",
+                mod.__name__,
+                getattr(func.__class__, "__name__", "function"),
+                func.__name__
+            )
+            self._callbacks[func_string] = func
+        else:
+            func_string = func
+
         def callback_wrapper(ch, method, properties, body):
-            LOGGER.info("Got message - %s with body %s" % (method.routing_key, body))
+            LOGGER.info("Got message - %s" % (method.routing_key))
             if func_string not in self._callbacks:
                 self._callbacks[func_string] = utils.import_obj(func_string)
             try:
@@ -67,14 +83,21 @@ class Consumer(Base):
 
     def _bind_things(self, channel):
         LOGGER.debug('Attempting to bind queues')
-        for q_name, q_settings in iteritems(self.settings.CONSUMER['QUEUES']):
-            LOGGER.debug('Declaring queue - %s' % q_name)
-            channel.queue_declare(queue=q_name, durable=q_settings['DURABLE'], auto_delete=q_settings['AUTO_DELETE'])
-            for binding in q_settings['BINDINGS']:
-                LOGGER.info("Binding the queue - %s with key %s" % (q_name, binding))
-                channel.queue_bind(exchange=self.settings.EXCHANGE, queue=q_name,
-                                   routing_key=binding)
-            LOGGER.debug("Setting Basic consume for callback - %s " % q_settings['CALLBACK'])
-            channel.basic_consume(self.callback(q_settings['CALLBACK']), queue=q_name,
-                                  no_ack=q_settings['NO_ACK'])
 
+        for q_name, q_settings in iteritems(self.settings.CONSUMER['QUEUES']):
+            q_st = DEFAULT_QUEUE_SETTINGS.copy()
+            q_st.update(q_settings)
+            queue_name = q_name
+            if queue_name.startswith("AUTO-"):
+                queue_name = ""
+            mthd_frame = channel.queue_declare(queue=queue_name, durable=q_st['DURABLE'],
+                                               auto_delete=q_st['AUTO_DELETE'])
+            queue_name = mthd_frame.method.queue
+            LOGGER.debug('Declaring queue - %s' % queue_name)
+            for binding in q_st['BINDINGS']:
+                LOGGER.info("Binding the queue - %s with key %s" % (queue_name, binding))
+                channel.queue_bind(exchange=self.settings.EXCHANGE, queue=queue_name,
+                                   routing_key=binding)
+            LOGGER.debug("Setting Basic consume for callback - %s " % q_st['CALLBACK'])
+            channel.basic_consume(self.callback(q_st['CALLBACK']), queue=queue_name,
+                                  no_ack=q_st['NO_ACK'], exclusive=q_st['EXCLUSIVE'])
