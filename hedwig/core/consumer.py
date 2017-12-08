@@ -90,6 +90,8 @@ class Consumer(Base):
             queue_name = q_name
             if queue_name.startswith("AUTO-"):
                 queue_name = ""
+                # Unnamed Queues should auto delete
+                q_st["AUTO_DELETE"] = True
             mthd_frame = channel.queue_declare(queue=queue_name, durable=q_st['DURABLE'],
                                                auto_delete=q_st['AUTO_DELETE'])
             queue_name = mthd_frame.method.queue
