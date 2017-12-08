@@ -6,6 +6,7 @@ from pika.exceptions import ConnectionClosed
 
 from hedwig import utils
 from hedwig.core.base import Base
+from hedwig.core.exceptions import IllegalOperation
 from hedwig.core.settings import DEFAULT_QUEUE_SETTINGS
 
 LOGGER = logging.getLogger(__name__)
@@ -44,6 +45,20 @@ class Consumer(Base):
             if self.settings.CONSUMER['RAISE_EXCEPTION']:
                 LOGGER.info("CONSUMER RAISED EXCEPTION")
                 raise
+
+    def add_queue(self, q_setting, q_name=None):
+        if self.channel is not None:
+            raise IllegalOperation("Should not add to queue after channel is created."
+                                   " Shut down before trying again.")
+        if q_name is None:
+            cur_length = len(self.settings.CONSUMER["QUEUES"])
+            bind_key = ".".join(q_setting["BINDINGS"])
+            q_setting["AUTO_DELETE"] = True
+            q_name = "AUTO-{}-{}".format(cur_length, bind_key)
+        self.settings.CONSUMER["QUEUES"][q_name] = q_setting
+
+    def set_callback(self, func_string, cb):
+        self._callbacks[func_string] = cb
 
     def callback(self, func):
         """
