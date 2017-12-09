@@ -53,7 +53,7 @@ class Consumer(Base):
         if q_name is None:
             cur_length = len(self.settings.CONSUMER["QUEUES"])
             bind_key = ".".join(q_setting["BINDINGS"])
-            q_setting["AUTO_DELETE"] = True
+            q_setting["DURABLE"] = False
             q_setting["EXCLUSIVE"] = True
             q_name = "AUTO-{}-{}".format(cur_length, bind_key)
         self.settings.CONSUMER["QUEUES"][q_name] = q_setting
@@ -107,7 +107,7 @@ class Consumer(Base):
             if queue_name.startswith("AUTO-"):
                 queue_name = ""
                 # Unnamed Queues should auto delete
-                q_st["AUTO_DELETE"] = True
+                q_st["DURABLE"] = False
                 q_st["EXCLUSIVE"] = True
             mthd_frame = channel.queue_declare(queue=queue_name, durable=q_st['DURABLE'],
                                                auto_delete=q_st['AUTO_DELETE'])
